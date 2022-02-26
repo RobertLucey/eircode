@@ -3,6 +3,8 @@ from difflib import SequenceMatcher
 from cached_property import cached_property
 import requests
 
+from eircode.eircode import Eircode
+
 
 class Addresses():
 
@@ -23,11 +25,11 @@ class Addresses():
 class Address():
 
     def __init__(self, *args, **kwargs):
-        self.display_name = kwargs['display_name']
-        self.link = kwargs['link']
+        self.display_name = kwargs.get('display_name', None)
+        self.link = kwargs.get('link', None)
+        self._eircode = kwargs.get('eircode', None)
 
-    @staticmethod
-    def get(name):
+    def set(self, name):
         base_identity = 'https://api-finder.eircode.ie/Latest/findergetidentity'
 
         identity_response = requests.get(base_identity).json()
@@ -44,10 +46,9 @@ class Address():
         resp = requests.get(base_url, params=params).json()
 
         if 'postcode' in resp:
-            return {
-                'eircode': resp['postcode'],
-                'display_name': name
-            }
+            self._eircode = resp['postcode']
+            self.display_name = name
+            return
 
         options = resp['options']
 
@@ -63,7 +64,8 @@ class Address():
 
             for address in addresses.ordered_best_fit(name):
                 try:
-                    return address[1].eircode
+                    self.display_name = address[1].eircode_data['display_name']
+                    self._eircode = address[1].eircode_data['eircode']
                 except ValueError:
                     pass
         else:
@@ -79,12 +81,16 @@ class Address():
     def serialize(self):
         return {
             'display_name': self.display_name,
-            'eircode': self.eircode,
+            'eircode': self.eircode_data,
             'link': self.link
         }
 
-    @cached_property
+    @property
     def eircode(self):
+        return Eircode(self._eircode)
+
+    @cached_property
+    def eircode_data(self):
         data = requests.get(self.link).json()
         if data['options']:
             addresses = Addresses()
@@ -98,13 +104,13 @@ class Address():
 
             for address in addresses.ordered_best_fit(self.display_name):
                 try:
-                    if isinstance(address[1].eircode, str):
+                    if isinstance(address[1].eircode_data, str):
                         return {
-                            'eircode': address[1].eircode,
+                            'eircode': address[1].eircode_data,
                             'display_name': address[1].display_name
                         }
                     else:
-                        return address[1].eircode
+                        return address[1].eircode_data
                 except ValueError:
                     pass
         else:
