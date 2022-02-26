@@ -24,12 +24,15 @@ class Addresses():
 
 class Address():
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, address, **kwargs):
+        self.input_address = address
+
         self.display_name = kwargs.get('display_name', None)
         self.link = kwargs.get('link', None)
         self._eircode = kwargs.get('eircode', None)
+        self.set()
 
-    def set(self, name):
+    def set(self):
         base_identity = 'https://api-finder.eircode.ie/Latest/findergetidentity'
 
         identity_response = requests.get(base_identity).json()
@@ -37,7 +40,7 @@ class Address():
         base_url = 'https://api-finder.eircode.ie/Latest/finderfindaddress'
         params = {
             'key': identity_response['key'],
-            'address': name,
+            'address': self.input_address,
             'language': 'en',
             'geographicAddress': True,
             'clientVersion': None
@@ -47,7 +50,7 @@ class Address():
 
         if 'postcode' in resp:
             self._eircode = resp['postcode']
-            self.display_name = name
+            self.display_name = self.input_address
             return
 
         options = resp['options']
@@ -62,7 +65,7 @@ class Address():
                     )
                 )
 
-            for address in addresses.ordered_best_fit(name):
+            for address in addresses.ordered_best_fit(self.name):
                 try:
                     self.display_name = address[1].eircode_data['display_name']
                     self._eircode = address[1].eircode_data['eircode']
@@ -81,8 +84,8 @@ class Address():
     def serialize(self):
         return {
             'display_name': self.display_name,
-            'eircode': self.eircode_data,
-            'link': self.link
+            'link': self.link,
+            'eircode': self.eircode.serialize()
         }
 
     @property
