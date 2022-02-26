@@ -1,0 +1,4 @@
+mock
+nose2
+coverage
+nose-timer
