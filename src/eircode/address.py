@@ -4,6 +4,10 @@ from cached_property import cached_property
 import requests
 
 from eircode.eircode import Eircode
+from eircode.constants import (
+    IDENTITY_URL_PATH,
+    EIRCODE_FINDER_URL_PATH
+)
 
 
 class Addresses():
@@ -25,19 +29,25 @@ class Addresses():
 class Address():
 
     def __init__(self, address, **kwargs):
+        '''
+
+        :param address: The address you're searching for
+        :kwargs display_name (optional): The display name found on eircode.ie
+        :kwargs link (optional): The link that was used to get the info
+        :kwargs eircode (optional): The eircode string
+        '''
         self.input_address = address
 
         self.display_name = kwargs.get('display_name', None)
         self.link = kwargs.get('link', None)
         self._eircode = kwargs.get('eircode', None)
-        self.set()
+
+        if not kwargs.get('skip_set', False):
+            self.set()
 
     def set(self):
-        base_identity = 'https://api-finder.eircode.ie/Latest/findergetidentity'
+        identity_response = requests.get(IDENTITY_URL_PATH).json()
 
-        identity_response = requests.get(base_identity).json()
-
-        base_url = 'https://api-finder.eircode.ie/Latest/finderfindaddress'
         params = {
             'key': identity_response['key'],
             'address': self.input_address,
@@ -46,26 +56,31 @@ class Address():
             'clientVersion': None
         }
 
-        resp = requests.get(base_url, params=params).json()
+        finder_response = requests.get(
+            EIRCODE_FINDER_URL_PATH,
+            params=params
+        ).json()
 
-        if 'postcode' in resp:
-            self._eircode = resp['postcode']
+        if 'postcode' in finder_response:
+            self._eircode = finder_response['postcode']
             self.display_name = self.input_address
             return
 
-        options = resp['options']
+        options = finder_response['options']
 
         if options:
             addresses = Addresses()
             for option in options:
                 addresses.append(
                     Address(
+                        option['displayName'],
                         display_name=option['displayName'],
-                        link=option['links'][0]['href']
+                        link=option['links'][0]['href'],
+                        skip_set=True
                     )
                 )
 
-            for address in addresses.ordered_best_fit(self.name):
+            for address in addresses.ordered_best_fit(self.input_address):
                 try:
                     self.display_name = address[1].eircode_data['display_name']
                     self._eircode = address[1].eircode_data['eircode']
@@ -100,8 +115,10 @@ class Address():
             for option in data['options']:
                 addresses.append(
                     Address(
+                        option['displayName'],
                         display_name=option['displayName'],
-                        link=option['links'][0]['href']
+                        link=option['links'][0]['href'],
+                        skip_set=True
                     )
                 )
 

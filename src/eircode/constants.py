@@ -1,3 +1,6 @@
+IDENTITY_URL_PATH = 'https://api-finder.eircode.ie/Latest/findergetidentity'
+EIRCODE_FINDER_URL_PATH = 'https://api-finder.eircode.ie/Latest/finderfindaddress'
+
 ROUTING_KEYS_TOWNS_MAP = {
     'A41': ['Ballyboughal'],
     'A42': ['Garristown'],
