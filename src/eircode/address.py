@@ -49,10 +49,11 @@ class Address():
         if not kwargs.get('skip_set', False):
             self.set(
                 throw_ex=kwargs.get('throw_ex', False),
-                proxy=kwargs.get('proxy', False)
+                proxy=kwargs.get('proxy', False),
+                reverse=kwargs.get('reverse', False),
             )
 
-    def set(self, throw_ex=True, proxy=False):
+    def set(self, throw_ex=True, proxy=False, reverse=False):
 
         if proxy:
 
@@ -91,6 +92,11 @@ class Address():
             )
 
         finder_response = finder_response.json()
+
+        if reverse:
+            self._eircode = self.input_address
+            self.display_name = ', '.join(finder_response['postalAddress'])
+            return
 
         if 'postcode' in finder_response:
             self._eircode = finder_response['postcode']
