@@ -9,7 +9,6 @@ from eircode.constants import (
     EIRCODE_FINDER_URL_PATH
 )
 
-
 class Addresses():
 
     def __init__(self):
@@ -43,9 +42,9 @@ class Address():
         self._eircode = kwargs.get('eircode', None)
 
         if not kwargs.get('skip_set', False):
-            self.set()
+            self.set(throw_ex=kwargs.get('throw_ex', False))
 
-    def set(self):
+    def set(self, throw_ex=True):
         identity_response = requests.get(IDENTITY_URL_PATH).json()
 
         params = {
@@ -67,8 +66,11 @@ class Address():
             return
 
         if finder_response.get('error', {}).get('code', None) == 403:
-            print(f'Cannot search: {finder_response["error"]["text"]}')
-            return
+            if throw_ex:
+                raise Exception(finder_response['error']['text'])
+            else:
+                print(f'Cannot search: {finder_response["error"]["text"]}')
+                return
 
         options = finder_response['options']
 
