@@ -13,7 +13,7 @@ Usage
 
 ```python
 >>> from eircode.address import Address
->>> address = Address('4 MAIN STREET, Co. CLARE')
+>>> address = Address('4 MAIN STREET, Co. CLARE', proxy=False)
 >>> address.serialize()
 {'display_name': '4 MAIN STREET, NEWMARKET-ON-FERGUS, Co. CLARE',
  'eircode': {'county': 'Clare',

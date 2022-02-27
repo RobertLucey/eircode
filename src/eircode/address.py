@@ -3,7 +3,6 @@ import urllib
 
 from cached_property import cached_property
 import requests
-from requests_ip_rotator import ApiGateway
 
 from eircode.eircode import Eircode
 from eircode.constants import (
