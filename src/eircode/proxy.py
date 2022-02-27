@@ -16,7 +16,7 @@ class Proxy():
             self.setup()
 
     def setup(self, force=False):
-        if self._is_setup:
+        if not force and self._is_setup:
             return
 
         self.gateway = ApiGateway(
@@ -26,15 +26,21 @@ class Proxy():
         self.gateway.start()
 
         self.session = requests.Session()
-        self.session.mount('https://api-finder.eircode.ie', self.gateway)
+        self.session.mount(
+            'https://api-finder.eircode.ie',
+            self.gateway
+        )
 
         self._is_setup = True
 
     def get(self, url, params={}):
-        # if a bad get force a setup
-        return self.session.get(
-            url + '?' + urllib.parse.urlencode(params)
-        )
+        try:
+            return self.session.get(
+                url + '?' + urllib.parse.urlencode(params)
+            )
+        except:
+            self.setup(force=True)
+            return self.get(url, params=params)
 
     def shutdown(self):
         self.gateway.shutdown()
