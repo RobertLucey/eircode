@@ -1,7 +1,7 @@
 Eircode
 =======
 
-Tool to get eircodes from an address
+Tool to get eircodes from an address. Optional proxy to avoid rate limiting.
 
 Installation
 ------------

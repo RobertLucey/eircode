@@ -1,13 +1,19 @@
 from difflib import SequenceMatcher
+import urllib
 
 from cached_property import cached_property
 import requests
+from requests_ip_rotator import ApiGateway
 
 from eircode.eircode import Eircode
 from eircode.constants import (
     IDENTITY_URL_PATH,
     EIRCODE_FINDER_URL_PATH
 )
+from eircode.proxy import Proxy
+
+proxy_cli = Proxy(skip_setup=True)
+
 
 class Addresses():
 
@@ -42,23 +48,50 @@ class Address():
         self._eircode = kwargs.get('eircode', None)
 
         if not kwargs.get('skip_set', False):
-            self.set(throw_ex=kwargs.get('throw_ex', False))
+            self.set(
+                throw_ex=kwargs.get('throw_ex', False),
+                proxy=kwargs.get('proxy', False)
+            )
 
-    def set(self, throw_ex=True):
-        identity_response = requests.get(IDENTITY_URL_PATH).json()
+    def set(self, throw_ex=True, proxy=False):
 
-        params = {
-            'key': identity_response['key'],
-            'address': self.input_address,
-            'language': 'en',
-            'geographicAddress': True,
-            'clientVersion': None
-        }
+        if proxy:
 
-        finder_response = requests.get(
-            EIRCODE_FINDER_URL_PATH,
-            params=params
-        ).json()
+            try:
+                proxy_cli.setup()
+            except:
+                raise Exception('Could not set up proxy cli. Go to here for details: https://github.com/Ge0rg3/requests-ip-rotator')
+
+            identity_response = proxy_cli.get(IDENTITY_URL_PATH).json()
+
+            params = {
+                'key': identity_response['key'],
+                'address': self.input_address,
+                'language': 'en',
+                'geographicAddress': True,
+                'clientVersion': None
+            }
+
+            finder_response = proxy_cli.get(
+                EIRCODE_FINDER_URL_PATH + '?' + urllib.parse.urlencode(params)
+            )
+
+        else:
+            identity_response = requests.get(IDENTITY_URL_PATH).json()
+            params = {
+                'key': identity_response['key'],
+                'address': self.input_address,
+                'language': 'en',
+                'geographicAddress': True,
+                'clientVersion': None
+            }
+
+            finder_response = requests.get(
+                EIRCODE_FINDER_URL_PATH,
+                params=params
+            )
+
+        finder_response = finder_response.json()
 
         if 'postcode' in finder_response:
             self._eircode = finder_response['postcode']

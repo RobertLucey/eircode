@@ -1,2 +1,3 @@
 requests
 cached_property
+requests-ip-rotator

@@ -5,12 +5,13 @@ from setuptools import (
 
 INSTALL_REQUIRES = (
     'requests',
-    'cached_property'
+    'cached_property',
+    'requests-ip-rotator'
 )
 
 setup(
     name='eircode',
-    version='0.0.7',
+    version='0.0.8',
     python_requires='>=3.5',
     author='Robert Lucey',
     url='https://github.com/RobertLucey/eircode',
