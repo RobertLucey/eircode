@@ -66,6 +66,10 @@ class Address():
             self.display_name = self.input_address
             return
 
+        if finder_response.get('error', {}).get('code', None) == 403:
+            print(f'Cannot search: {finder_response["error"]["text"]}')
+            return
+
         options = finder_response['options']
 
         if options:
