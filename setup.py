@@ -10,8 +10,8 @@ INSTALL_REQUIRES = (
 
 setup(
     name='eircode',
-    version='0.0.6',
-    python_requires='>=3.9',
+    version='0.0.7',
+    python_requires='>=3.5',
     author='Robert Lucey',
     url='https://github.com/RobertLucey/eircode',
     packages=find_packages('src'),
