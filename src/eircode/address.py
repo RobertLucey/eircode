@@ -46,6 +46,8 @@ class Address():
         self.link = kwargs.get('link', None)
         self._eircode = kwargs.get('eircode', None)
 
+        self.proxy = kwargs.get(proxy=False)
+
         if not kwargs.get('skip_set', False):
             self.set(
                 throw_ex=kwargs.get('throw_ex', False),
@@ -53,9 +55,11 @@ class Address():
                 reverse=kwargs.get('reverse', False),
             )
 
-    def set(self, throw_ex=True, proxy=False, reverse=False):
+    def set(self, throw_ex=True, reverse=False):
 
-        if proxy:
+        if self.proxy:
+
+            self.proxy = True
 
             try:
                 proxy_cli.setup()
@@ -120,7 +124,8 @@ class Address():
                         option['displayName'],
                         display_name=option['displayName'],
                         link=option['links'][0]['href'],
-                        skip_set=True
+                        skip_set=True,
+                        proxy=self.proxy
                     )
                 )
 
@@ -153,6 +158,11 @@ class Address():
 
     @cached_property
     def eircode_data(self):
+        if self.proxy:
+            data = proxy_cli.get(self.link).json()
+        else:
+            data = requests.get(self.link).json()
+
         data = requests.get(self.link).json()
         if data['options']:
             addresses = Addresses()
@@ -162,7 +172,8 @@ class Address():
                         option['displayName'],
                         display_name=option['displayName'],
                         link=option['links'][0]['href'],
-                        skip_set=True
+                        skip_set=True,
+                        proxy=self.proxy
                     )
                 )
 
