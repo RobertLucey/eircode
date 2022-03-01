@@ -46,12 +46,11 @@ class Address():
         self.link = kwargs.get('link', None)
         self._eircode = kwargs.get('eircode', None)
 
-        self.proxy = kwargs.get(proxy=False)
+        self.proxy = kwargs.get('proxy', False)
 
         if not kwargs.get('skip_set', False):
             self.set(
                 throw_ex=kwargs.get('throw_ex', False),
-                proxy=kwargs.get('proxy', False),
                 reverse=kwargs.get('reverse', False),
             )
 
@@ -139,6 +138,9 @@ class Address():
             print('TODO: use the autocomplete to see if we can get something')
 
     def match_score(self, name):
+        if isinstance(name, Address):
+            name = name.display_name
+
         return SequenceMatcher(
             None,
             self.display_name.lower(),
