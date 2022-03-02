@@ -32,8 +32,3 @@ Usage
              'unique_identifier': 'K2W0'},
  'link': None}
 ```
-
-Using a proxy
--------------
-
-You need to set up an APIGateway API named 'restapis' in eu-west-1. Then add a GET method to it. Once you have auth details in ~/.aws and they have access to the api it should just work.
