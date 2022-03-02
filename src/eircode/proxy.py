@@ -45,6 +45,7 @@ class Proxy():
             if self.site == 'https://api-finder.eircode.ie':
                 if response.json().get('error', {}).get('code', None) == 403:
                     raise Exception()
+            return response
         except:
             self.shutdown()
             self.setup(force=True)
