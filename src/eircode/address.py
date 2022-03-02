@@ -23,6 +23,9 @@ class Addresses():
         self._data.append(address)
 
     def ordered_best_fit(self, name):
+        if isinstance(name, Address):
+            name = name.display_name
+
         return sorted(
             [(i.match_score(name), i) for i in self._data],
             key=lambda i: i[0],
