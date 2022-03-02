@@ -5,6 +5,17 @@ from eircode.proxy import Proxy
 
 class ProxyTest(TestCase):
 
-    @skip('do some proxy tests... somehow. Maybe make some requests to get our ip and make sure they change')
-    def test_something(self):
-        pass
+    @skip('if no aws creds just skip')
+    def test_(self):
+        proxy = Proxy(site='https://api.ipify.org')
+
+        first_request = proxy.get('https://api.ipify.org')
+        first = first_request.text
+
+        proxy.shutdown()
+        proxy.setup(force=True)
+
+        second_request = proxy.get('https://api.ipify.org')
+        second = second_request.text
+
+        self.assertNotEqual(first, second)
