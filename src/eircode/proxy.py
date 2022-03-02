@@ -12,7 +12,6 @@ class Proxy():
         self.session = None
 
         self.site = site if site is not None else 'https://api-finder.eircode.ie'
-        self.hostname = urllib.parse.urlparse(self.site).netloc
 
         self._is_setup = False
 
@@ -39,9 +38,13 @@ class Proxy():
 
     def get(self, url, params={}):
         try:
-            return self.session.get(
+            response = self.session.get(
                 url + '?' + urllib.parse.urlencode(params)
             )
+
+            if self.site == 'https://api-finder.eircode.ie':
+                if response.json().get('error', {}).get('code', None) == 403:
+                    raise Exception()
         except:
             self.shutdown()
             self.setup(force=True)
