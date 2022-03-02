@@ -1,4 +1,5 @@
 import urllib
+import urllib.parse
 
 import requests
 from requests_ip_rotator import ApiGateway
@@ -6,9 +7,12 @@ from requests_ip_rotator import ApiGateway
 
 class Proxy():
 
-    def __init__(self, skip_setup=False):
+    def __init__(self, skip_setup=False, site=None):
         self.gateway = None
         self.session = None
+
+        self.site = site if site is not None else 'https://api-finder.eircode.ie'
+        self.hostname = urllib.parse.urlparse(self.site).netloc
 
         self._is_setup = False
 
@@ -20,14 +24,14 @@ class Proxy():
             return
 
         self.gateway = ApiGateway(
-            'https://api-finder.eircode.ie',
+            self.site,
             regions=['eu-west-1']
         )
         self.gateway.start()
 
         self.session = requests.Session()
         self.session.mount(
-            'https://api-finder.eircode.ie',
+            self.site,
             self.gateway
         )
 
@@ -39,6 +43,7 @@ class Proxy():
                 url + '?' + urllib.parse.urlencode(params)
             )
         except:
+            self.shutdown()
             self.setup(force=True)
             return self.get(url, params=params)
 
