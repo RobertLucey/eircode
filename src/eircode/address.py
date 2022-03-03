@@ -61,8 +61,6 @@ class Address():
 
         if self.proxy:
 
-            self.proxy = True
-
             try:
                 proxy_cli.setup()
             except:
