@@ -38,9 +38,12 @@ class Proxy():
         self._is_setup = True
 
     def get(self, url, params={}):
+        full_url = url + '?' + urllib.parse.urlencode(params)
+        if len(url) > 1000:
+            raise ValueError('URL too long')
         try:
             response = self.session.get(
-                url + '?' + urllib.parse.urlencode(params)
+                full_url
             )
 
             if self.site == 'https://api-finder.eircode.ie':
