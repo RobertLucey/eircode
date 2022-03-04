@@ -1,5 +1,6 @@
 import urllib
 import urllib.parse
+import random
 
 import requests
 from requests_ip_rotator import ApiGateway
@@ -48,9 +49,11 @@ class Proxy():
                     raise Exception()
             return response
         except:
-            print('Resetting proxy')
-            self.shutdown()
-            self.setup(force=True)
+            print('Proxy error')
+            if random.random() < 0.05:
+                print('Resetting proxy')
+                self.shutdown()
+                self.setup(force=True)
             return self.get(url, params=params)
 
     def shutdown(self):
