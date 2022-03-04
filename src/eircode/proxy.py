@@ -24,8 +24,7 @@ class Proxy():
             return
 
         self.gateway = ApiGateway(
-            self.site,
-            regions=['eu-west-1']
+            self.site
         )
         self.gateway.shutdown()
         self.gateway.start(force=True)
