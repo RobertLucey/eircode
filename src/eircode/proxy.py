@@ -26,7 +26,8 @@ class Proxy():
             self.site,
             regions=['eu-west-1']
         )
-        self.gateway.start()
+        self.gateway.shutdown()
+        self.gateway.start(force=True)
 
         self.session = requests.Session()
         self.session.mount(
@@ -47,9 +48,13 @@ class Proxy():
                     raise Exception()
             return response
         except:
+            print('Resetting proxy')
             self.shutdown()
             self.setup(force=True)
             return self.get(url, params=params)
 
     def shutdown(self):
         self.gateway.shutdown()
+
+
+proxy = Proxy(skip_setup=True)

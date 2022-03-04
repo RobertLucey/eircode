@@ -9,9 +9,7 @@ from eircode.constants import (
     IDENTITY_URL_PATH,
     EIRCODE_FINDER_URL_PATH
 )
-from eircode.proxy import Proxy
-
-proxy_cli = Proxy(skip_setup=True)
+from eircode.proxy import proxy
 
 
 class Addresses():
@@ -62,11 +60,11 @@ class Address():
         if self.proxy:
 
             try:
-                proxy_cli.setup()
+                proxy.setup()
             except:
                 raise Exception('Could not set up proxy cli. Go to here for details: https://github.com/Ge0rg3/requests-ip-rotator')
 
-            identity_response = proxy_cli.get(IDENTITY_URL_PATH).json()
+            identity_response = proxy.get(IDENTITY_URL_PATH).json()
 
             params = {
                 'key': identity_response['key'],
@@ -76,7 +74,7 @@ class Address():
                 'clientVersion': None
             }
 
-            finder_response = proxy_cli.get(
+            finder_response = proxy.get(
                 EIRCODE_FINDER_URL_PATH + '?' + urllib.parse.urlencode(params)
             )
 
