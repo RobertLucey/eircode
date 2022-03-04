@@ -160,7 +160,7 @@ class Address():
     @cached_property
     def eircode_data(self):
         if self.proxy:
-            data = proxy_cli.get(self.link).json()
+            data = proxy.get(self.link).json()
         else:
             data = requests.get(self.link).json()
 
