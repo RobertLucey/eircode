@@ -11,7 +11,7 @@ INSTALL_REQUIRES = (
 
 setup(
     name='eircode',
-    version='0.0.21',
+    version='0.0.22',
     python_requires='>=3.5',
     author='Robert Lucey',
     url='https://github.com/RobertLucey/eircode',
