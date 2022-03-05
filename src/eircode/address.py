@@ -133,8 +133,8 @@ class Address():
                 try:
                     self.display_name = address.eircode_data['display_name']
                     self._eircode = address.eircode_data['eircode']
-                except ValueError:
-                    pass
+                except ValueError as ex:
+                    print('Not setting eircode values: %s' % (ex,))
         else:
             print('TODO: use the autocomplete to see if we can get something')
 
