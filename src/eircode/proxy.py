@@ -5,6 +5,8 @@ import random
 import requests
 from requests_ip_rotator import ApiGateway
 
+from eircode.logging import logger
+
 
 class Proxy():
 
@@ -51,9 +53,9 @@ class Proxy():
                     raise Exception(response.json()['error']['text'])
             return response
         except:
-            print('Proxy error')
+            logger.error('Proxy error')
             if random.random() < 0.05:
-                print('Resetting proxy')
+                logger.info('Resetting proxy')
                 self.shutdown()
                 self.setup(force=True)
             return self.get(url, params=params)

@@ -1,3 +1,7 @@
+import os
+
+LOG_LOCATION = '/var/log/eircode/eircode.log' if os.getenv('TEST_ENV') != 'True' else '/var/log/eircode/test_eircode.log'
+
 IDENTITY_URL_PATH = 'https://api-finder.eircode.ie/Latest/findergetidentity'
 EIRCODE_FINDER_URL_PATH = 'https://api-finder.eircode.ie/Latest/finderfindaddress'
 

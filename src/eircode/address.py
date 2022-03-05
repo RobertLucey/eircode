@@ -4,6 +4,7 @@ import urllib
 from cached_property import cached_property
 import requests
 
+from eircode.logging import logger
 from eircode.eircode import Eircode
 from eircode.constants import (
     IDENTITY_URL_PATH,
@@ -40,6 +41,10 @@ class Address():
         :kwargs display_name (optional): The display name found on eircode.ie
         :kwargs link (optional): The link that was used to get the info
         :kwargs eircode (optional): The eircode string
+        :kwargs proxy (optional): To proxy requests to the eircode api or not
+        :kwargs throw_ex (optional): To throw exceptions or gracefully fail
+        :kwargs reverse (optional): True if the input is a eircode
+            rather than an address
         '''
         self.input_address = address
 
@@ -56,13 +61,20 @@ class Address():
             )
 
     def set(self, throw_ex=True, reverse=False):
+        '''
 
+        :kwargs throw_ex (optional): To throw exceptions or gracefully fail
+        :kwargs reverse (optional): True if the input is a eircode
+            rather than an address
+        '''
         if self.proxy:
 
             try:
                 proxy.setup()
             except:
-                raise Exception('Could not set up proxy cli. Go to here for details: https://github.com/Ge0rg3/requests-ip-rotator')
+                raise Exception(
+                    'Could not set up proxy cli. Go to here for details: https://github.com/Ge0rg3/requests-ip-rotator'
+                )
 
             identity_response = proxy.get(IDENTITY_URL_PATH).json()
 
@@ -74,9 +86,14 @@ class Address():
                 'clientVersion': None
             }
 
-            finder_response = proxy.get(
-                EIRCODE_FINDER_URL_PATH + '?' + urllib.parse.urlencode(params)
-            )
+            try:
+                finder_response = proxy.get(
+                    EIRCODE_FINDER_URL_PATH + '?' + urllib.parse.urlencode(params)
+                )
+            except ValueError as ex:
+                logger.error(
+                    'Cannot search: %s' % (ex,)
+                )
 
         else:
             identity_response = requests.get(IDENTITY_URL_PATH).json()
@@ -88,10 +105,15 @@ class Address():
                 'clientVersion': None
             }
 
-            finder_response = requests.get(
-                EIRCODE_FINDER_URL_PATH,
-                params=params
-            )
+            try:
+                finder_response = requests.get(
+                    EIRCODE_FINDER_URL_PATH,
+                    params=params
+                )
+            except ValueError as ex:
+                logger.error(
+                    'Cannot search: %s' % (ex,)
+                )
 
         finder_response = finder_response.json()
 
@@ -109,7 +131,9 @@ class Address():
             if throw_ex:
                 raise Exception(finder_response['error']['text'])
             else:
-                print(f'Cannot search: {finder_response["error"]["text"]}')
+                logger.error(
+                    f'Cannot search: {finder_response["error"]["text"]}'
+                )
                 return
 
         options = finder_response['options']
@@ -134,9 +158,11 @@ class Address():
                     self.display_name = address.eircode_data['display_name']
                     self._eircode = address.eircode_data['eircode']
                 except ValueError as ex:
-                    print('Not setting eircode values: %s' % (ex,))
+                    logger.error('Not setting eircode values: %s' % (ex,))
         else:
-            print('TODO: use the autocomplete to see if we can get something')
+            logger.warning(
+                'TODO: use the autocomplete to see if we can get something'
+            )
 
     def match_score(self, name):
         if isinstance(name, Address):
@@ -194,12 +220,15 @@ class Address():
                     else:
                         return address.eircode_data
                 except ValueError:
-                    raise ValueError('Best eircode option is not good, can try more options')
+                    raise ValueError(
+                        'Best eircode option is not good, can try more options'
+                    )
         else:
-            if data['result']['text'] == 'IncompleteAddressEntered':
-                raise ValueError('Must go back')
-            elif data['result']['text'] == 'NonUniqueAddress':
-                raise ValueError('Must go back')
+            if data['result']['text'] in {
+                'IncompleteAddressEntered',
+                'NonUniqueAddress'
+            }:
+                raise ValueError(data['result']['text'])
             else:
                 return {
                     'eircode': data['postcode'],
