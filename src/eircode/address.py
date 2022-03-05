@@ -180,17 +180,17 @@ class Address():
                     )
                 )
 
-            for address in addresses.ordered_best_fit(self.display_name):
-                try:
-                    if isinstance(address[1].eircode_data, str):
-                        return {
-                            'eircode': address[1].eircode_data,
-                            'display_name': address[1].display_name
-                        }
-                    else:
-                        return address[1].eircode_data
-                except ValueError:
-                    pass
+            address = addresses.ordered_best_fit(self.display_name)[0][1]
+            try:
+                if isinstance(address.eircode_data, str):
+                    return {
+                        'eircode': address.eircode_data,
+                        'display_name': address.display_name
+                    }
+                else:
+                    return address.eircode_data
+            except ValueError:
+                pass
         else:
             if data['result']['text'] == 'IncompleteAddressEntered':
                 raise ValueError('Must go back')
