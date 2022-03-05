@@ -127,10 +127,12 @@ class Address():
                     )
                 )
 
-            for address in addresses.ordered_best_fit(self.input_address):
+            ordered_best = addresses.ordered_best_fit(self.input_address)
+            if ordered_best:
+                address = ordered_best[0][1]
                 try:
-                    self.display_name = address[1].eircode_data['display_name']
-                    self._eircode = address[1].eircode_data['eircode']
+                    self.display_name = address.eircode_data['display_name']
+                    self._eircode = address.eircode_data['eircode']
                 except ValueError:
                     pass
         else:
