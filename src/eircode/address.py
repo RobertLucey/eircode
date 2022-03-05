@@ -164,7 +164,9 @@ class Address():
         else:
             data = requests.get(self.link).json()
 
-        data = requests.get(self.link).json()
+        if data.get('error', {}).get('code', None) == 403:
+            raise Exception(data['error']['text'])
+
         if data['options']:
             addresses = Addresses()
             for option in data['options']:
