@@ -194,7 +194,7 @@ class Address():
                     else:
                         return address.eircode_data
                 except ValueError:
-                    pass
+                    raise ValueError('Best eircode option is not good, can try more options')
         else:
             if data['result']['text'] == 'IncompleteAddressEntered':
                 raise ValueError('Must go back')
