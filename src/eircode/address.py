@@ -114,6 +114,7 @@ class Address():
                 logger.error(
                     'Cannot search: %s' % (ex,)
                 )
+                return
 
         finder_response = finder_response.json()
 
