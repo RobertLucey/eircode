@@ -228,7 +228,8 @@ class Address():
         else:
             if data['result']['text'] in {
                 'IncompleteAddressEntered',
-                'NonUniqueAddress'
+                'NonUniqueAddress',
+                'PostcodeNotAvailable'
             }:
                 raise ValueError(data['result']['text'])
             else:
