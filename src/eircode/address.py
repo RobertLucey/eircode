@@ -94,6 +94,7 @@ class Address():
                 logger.error(
                     'Cannot search: %s' % (ex,)
                 )
+                return
 
         else:
             identity_response = requests.get(IDENTITY_URL_PATH).json()
