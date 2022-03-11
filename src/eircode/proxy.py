@@ -39,7 +39,7 @@ class Proxy():
 
         self._is_setup = True
 
-    def get(self, url, params={}):
+    def get(self, url, params={}, fail_count=0):
         full_url = url + '?' + urllib.parse.urlencode(params)
         if len(url) > 1000:
             raise ValueError('URL too long')
@@ -53,12 +53,15 @@ class Proxy():
                     raise Exception(response.json()['error']['text'])
             return response
         except:
+            if fail_count > 5:
+                raise Exception('Retried too many times')
+
             logger.error('Proxy error')
             if random.random() < 0.05:
                 logger.info('Resetting proxy')
                 self.shutdown()
                 self.setup(force=True)
-            return self.get(url, params=params)
+            return self.get(url, params=params, fail_count=fail_count + 1)
 
     def shutdown(self):
         self.gateway.shutdown()
