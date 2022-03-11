@@ -195,7 +195,10 @@ class Address():
             data = requests.get(self.link).json()
 
         if data.get('error', {}).get('code', None) == 403:
-            raise Exception(data['error']['text'])
+            raise ValueError(data['error']['text'])
+
+        if 'options' not in data:
+            raise ValueError('Could not get options from data: %s' % (data,))
 
         if data['options']:
             addresses = Addresses()
