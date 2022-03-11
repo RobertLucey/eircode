@@ -77,6 +77,8 @@ class Address():
                 )
 
             identity_response = proxy.get(IDENTITY_URL_PATH).json()
+            while 'key' not in identity_response:
+                identity_response = proxy.get(IDENTITY_URL_PATH).json()
 
             params = {
                 'key': identity_response['key'],
@@ -149,7 +151,8 @@ class Address():
                         display_name=option['displayName'],
                         link=option['links'][0]['href'],
                         skip_set=True,
-                        proxy=self.proxy
+                        proxy=self.proxy,
+                        throw_ex=self.throw_ex
                     )
                 )
 
