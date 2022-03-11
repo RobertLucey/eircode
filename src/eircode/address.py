@@ -216,7 +216,7 @@ class Address():
             ordered_best = addresses.ordered_best_fit(self.display_name)
             if ordered_best:
                 address = ordered_best[0][1]
-                if address.display_name == self.display_name:
+                if address.link == self.link:
                     raise ValueError('Cyclical address lookup, exiting early')
                 try:
                     if isinstance(address.eircode_data, str):
