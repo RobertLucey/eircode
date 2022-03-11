@@ -53,10 +53,11 @@ class Address():
         self._eircode = kwargs.get('eircode', None)
 
         self.proxy = kwargs.get('proxy', False)
+        self.throw_ex = kwargs.get('throw_ex', False)
 
         if not kwargs.get('skip_set', False):
             self.set(
-                throw_ex=kwargs.get('throw_ex', False),
+                throw_ex=self.throw_ex,
                 reverse=kwargs.get('reverse', False),
             )
 
