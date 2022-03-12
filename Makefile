@@ -35,4 +35,6 @@ quick_build:
 test: build test_requirements quick_test
 
 quick_test:
-	$(IN_ENV) $(TEST_CONTEXT) nose2 test
+	$(IN_ENV) $(TEST_CONTEXT) nosetests --with-coverage --cover-package=eircode --cover-erase --with-timer
+	$(IN_ENV) coverage report -m
+	$(IN_ENV) coverage html
