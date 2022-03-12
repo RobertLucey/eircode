@@ -141,6 +141,12 @@ class Address():
                 )
                 return
 
+        if 'options' not in finder_response:
+            logger.error(
+                f'options not found in {finder_response}'
+            )
+            return
+
         options = finder_response['options']
 
         if options:
