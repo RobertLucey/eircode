@@ -3,6 +3,8 @@ Eircode
 
 Tool to get eircodes from an addresses / addresses from eircodes. Optional proxy to avoid rate limiting.
 
+Also includes tools to parse eircodes.
+
 Installation
 ------------
 
@@ -31,4 +33,12 @@ Usage
              'towns': ['Miltown Malbay', 'Ennis', 'Kildysart'],
              'unique_identifier': 'K2W0'},
  'link': None}
+>>> from eircode.eircode import Eircode
+>>> Eircode('A41AAAA').serialize()
+{'routing_key': 'A41',
+ 'unique_identifier': 'AAAA',
+ 'eircode': 'A41AAAA',
+ 'county': 'Dublin',
+ 'towns': ['Ballyboughal']
+}
 ```
