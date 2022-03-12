@@ -242,7 +242,9 @@ class Address():
             }:
                 raise ValueError(data['result']['text'])
             else:
-                return {
-                    'eircode': data['postcode'],
-                    'display_name': self.display_name
-                }
+                if 'postcode' in data:
+                    return {
+                        'eircode': data['postcode'],
+                        'display_name': self.display_name
+                    }
+                raise ValueError('Could not find postcode in response: %s' % (data,))
