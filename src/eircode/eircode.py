@@ -29,6 +29,10 @@ class Eircode():
 
     @property
     def towns(self):
+        '''
+        Gives a list of towns or areas that the eircode may
+        be in given the routing key
+        '''
         if not self.eircode:
             return None
         return ROUTING_KEYS_TOWNS_MAP[self.routing_key]

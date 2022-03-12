@@ -45,6 +45,7 @@ class Address():
         :kwargs throw_ex (optional): To throw exceptions or gracefully fail
         :kwargs reverse (optional): True if the input is a eircode
             rather than an address
+        :kwargs skip_set: Skip going to search for the eircode
         '''
         self.input_address = address
 
@@ -199,6 +200,16 @@ class Address():
 
     @cached_property
     def eircode_data(self):
+        '''
+
+        :return: dict like
+            {
+              eircode: eircode_string,
+              display_name: the address used to get the eircode
+            }
+        :rtype: dict
+        :throws ValueError: If the eircode cannot be retrieved
+        '''
         if self.proxy:
             data = proxy.get(self.link).json()
         else:
