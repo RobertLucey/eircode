@@ -94,11 +94,14 @@ class Address():
                 finder_response = proxy.get(
                     EIRCODE_FINDER_URL_PATH + '?' + urllib.parse.urlencode(params)
                 )
-            except ValueError as ex:
-                logger.error(
-                    'Cannot search: %s' % (ex,)
-                )
-                return
+            except Exception as ex:
+                if throw_ex:
+                    raise ex
+                else:
+                    logger.error(
+                        'Cannot search: %s' % (ex,)
+                    )
+                    return
 
         else:
             identity_response = requests.get(IDENTITY_URL_PATH).json()
@@ -115,11 +118,14 @@ class Address():
                     EIRCODE_FINDER_URL_PATH,
                     params=params
                 )
-            except ValueError as ex:
-                logger.error(
-                    'Cannot search: %s' % (ex,)
-                )
-                return
+            except Exception as ex:
+                if throw_ex:
+                    raise ex
+                else:
+                    logger.error(
+                        'Cannot search: %s' % (ex,)
+                    )
+                    return
 
         finder_response = finder_response.json()
 
