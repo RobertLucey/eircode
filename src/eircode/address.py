@@ -176,7 +176,7 @@ class Address():
                 try:
                     self.display_name = address.eircode_data['display_name']
                     self._eircode = address.eircode_data['eircode']
-                except ValueError as ex:
+                except Exception as ex:
                     logger.error('Not setting eircode values: %s' % (ex,))
         else:
             logger.warning(
