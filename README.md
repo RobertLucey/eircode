@@ -39,6 +39,5 @@ Usage
  'unique_identifier': 'AAAA',
  'eircode': 'A41AAAA',
  'county': 'Dublin',
- 'towns': ['Ballyboughal']
-}
+ 'towns': ['Ballyboughal']}
 ```
