@@ -4,6 +4,20 @@ from eircode.eircode import Eircode
 
 
 class EircodeTest(TestCase):
+    def test_validate(self):
+        with self.assertRaises(ValueError):
+            # must be str
+            Eircode(1234567)
+        with self.assertRaises(ValueError):
+            # must have 7 chars
+            Eircode("D14AAA")
+        with self.assertRaises(ValueError):
+            # bad routing key
+            Eircode("1234567")
+        with self.assertRaises(ValueError):
+            # not alphanum
+            Eircode("D14AAA!")
+
     def test_repr(self):
         self.assertEqual(str(Eircode("D14AAAA")), "Eircode(D14AAAA)")
 

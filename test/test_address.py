@@ -19,6 +19,12 @@ class AddressesTest(TestCase):
         self.assertEqual(
             addresses.ordered_best_fit("blahblah")[0][1].display_name, "blah something"
         )
+        self.assertEqual(
+            addresses.ordered_best_fit(
+                Address("", display_name="blahblah", skip_set=True)
+            )[0][1].display_name,
+            "blah something",
+        )
 
 
 class AddressTest(TestCase):
