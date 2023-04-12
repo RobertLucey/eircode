@@ -10,7 +10,6 @@ FORMAT = "%(asctime)s|%(levelname)s| %(message)s"
 
 
 class ColourfulFormatter(logging.Formatter):
-
     cyan = "\x1b[36m;21m"
     grey = "\x1b[38;21m"
     yellow = "\x1b[33;21m"
