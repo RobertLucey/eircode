@@ -65,7 +65,6 @@ class Address:
             rather than an address
         """
         if self.proxy:
-
             try:
                 proxy.setup()
             except:
@@ -175,7 +174,7 @@ class Address:
         return {
             "display_name": self.display_name,
             "link": self.link,
-            "eircode": self.eircode.serialize(),
+            "eircode": self.eircode.serialize() if self._eircode else None,
         }
 
     @property
