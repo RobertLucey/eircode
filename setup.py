@@ -11,7 +11,9 @@ INSTALL_REQUIRES = (
 
 setup(
     name='eircode',
-    version='0.0.45',
+    description='eircode parser and fetcher',
+    long_description='eircode parser and fetcher',
+    version='0.0.46',
     python_requires='>=3.5',
     author='Robert Lucey',
     url='https://github.com/RobertLucey/eircode',
