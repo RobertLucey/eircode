@@ -3,12 +3,12 @@ import json
 import urllib.parse
 from difflib import SequenceMatcher
 
-import requests
 from cached_property import cached_property
+import requests
 
-from eircode.constants import IDENTITY_URL_PATH, EIRCODE_FINDER_URL_PATH, BASE_URL
-from eircode.eircode import Eircode
 from eircode.logging import logger
+from eircode.eircode import Eircode
+from eircode.constants import IDENTITY_URL_PATH, EIRCODE_FINDER_URL_PATH, BASE_URL
 
 
 class Addresses:
@@ -77,6 +77,8 @@ class Address:
             import http.client
 
             conn = http.client.HTTPSConnection(BASE_URL)
+
+
 
             conn.request("GET",
                          f"{EIRCODE_FINDER_URL_PATH}?{urllib.parse.urlencode(params)}",
