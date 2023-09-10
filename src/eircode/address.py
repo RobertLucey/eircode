@@ -1,13 +1,14 @@
+import http.client
+import json
+import urllib.parse
 from difflib import SequenceMatcher
-import urllib
 
 from cached_property import cached_property
 import requests
 
 from eircode.logging import logger
 from eircode.eircode import Eircode
-from eircode.constants import IDENTITY_URL_PATH, EIRCODE_FINDER_URL_PATH
-from eircode.proxy import proxy
+from eircode.constants import IDENTITY_URL_PATH, EIRCODE_FINDER_URL_PATH, BASE_URL
 
 
 class Addresses:
@@ -36,7 +37,6 @@ class Address:
         :kwargs display_name (optional): The display name found on eircode.ie
         :kwargs link (optional): The link that was used to get the info
         :kwargs eircode (optional): The eircode string
-        :kwargs proxy (optional): To proxy requests to the eircode api or not
         :kwargs throw_ex (optional): To throw exceptions or gracefully fail
         :kwargs reverse (optional): True if the input is a eircode
             rather than an address
@@ -48,7 +48,6 @@ class Address:
         self.link = kwargs.get("link", None)
         self._eircode = kwargs.get("eircode", None)
 
-        self.proxy = kwargs.get("proxy", False)
         self.throw_ex = kwargs.get("throw_ex", False)
 
         if not kwargs.get("skip_set", False):
@@ -64,57 +63,39 @@ class Address:
         :kwargs reverse (optional): True if the input is a eircode
             rather than an address
         """
-        if self.proxy:
-            try:
-                proxy.setup()
-            except:
-                raise Exception(
-                    "Could not set up proxy cli. Go to here for details: https://github.com/Ge0rg3/requests-ip-rotator"
-                )
+        key = generate_token()
+        params = {
+            "key": key,
+            "address": self.input_address,
+            "geographicAddress": True,
+        }
 
-            identity_response = proxy.get(IDENTITY_URL_PATH).json()
-            while "key" not in identity_response:
-                identity_response = proxy.get(IDENTITY_URL_PATH).json()
+        try:
+            # response = requests.request("GET", EIRCODE_FINDER_URL_PATH, data="", params=params)
+            # finder_response = json.loads(response.text)
 
-            params = {
-                "key": identity_response["key"],
-                "address": self.input_address,
-                "language": "en",
-                "geographicAddress": True,
-                "clientVersion": None,
-            }
+            import http.client
 
-            try:
-                finder_response = proxy.get(
-                    EIRCODE_FINDER_URL_PATH + "?" + urllib.parse.urlencode(params)
-                )
-            except Exception as ex:
-                if throw_ex:
-                    raise ex
-                else:
-                    logger.error("Cannot search: %s" % (ex,))
-                    return
+            conn = http.client.HTTPSConnection(BASE_URL)
 
-        else:
-            identity_response = requests.get(IDENTITY_URL_PATH).json()
-            params = {
-                "key": identity_response["key"],
-                "address": self.input_address,
-                "language": "en",
-                "geographicAddress": True,
-                "clientVersion": None,
-            }
 
-            try:
-                finder_response = requests.get(EIRCODE_FINDER_URL_PATH, params=params)
-            except Exception as ex:
-                if throw_ex:
-                    raise ex
-                else:
-                    logger.error("Cannot search: %s" % (ex,))
-                    return
 
-        finder_response = finder_response.json()
+            conn.request("GET",
+                         f"{EIRCODE_FINDER_URL_PATH}?{urllib.parse.urlencode(params)}",
+                         headers={})
+
+            res = conn.getresponse()
+            data = res.read()
+
+            finder_response = json.loads(data.decode("utf-8"))
+
+
+        except Exception as ex:
+            if throw_ex:
+                raise ex
+            else:
+                logger.error("Cannot search: %s" % (ex,))
+                return
 
         if reverse:
             self._eircode = self.input_address
@@ -148,7 +129,6 @@ class Address:
                         display_name=option["displayName"],
                         link=option["links"][0]["href"],
                         skip_set=True,
-                        proxy=self.proxy,
                         throw_ex=self.throw_ex,
                     )
                 )
@@ -193,10 +173,7 @@ class Address:
         :rtype: dict
         :throws ValueError: If the eircode cannot be retrieved
         """
-        if self.proxy:
-            data = proxy.get(self.link).json()
-        else:
-            data = requests.get(self.link).json()
+        data = requests.get(self.link).json()
 
         if data.get("error", {}).get("code", None) == 403:
             raise ValueError(data["error"]["text"])
@@ -213,7 +190,6 @@ class Address:
                         display_name=option["displayName"],
                         link=option["links"][0]["href"],
                         skip_set=True,
-                        proxy=self.proxy,
                     )
                 )
 
@@ -248,3 +224,14 @@ class Address:
                         "display_name": self.display_name,
                     }
                 raise ValueError("Could not find postcode in response: %s" % (data,))
+
+
+def generate_token():
+    conn = http.client.HTTPSConnection(BASE_URL)
+    conn.request("GET", IDENTITY_URL_PATH)
+    res = conn.getresponse()
+    data = res.read()
+    data = data.decode("utf-8")
+    identity_response = json.loads(data)
+    key = identity_response['key']
+    return key

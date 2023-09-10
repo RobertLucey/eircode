@@ -5,9 +5,9 @@ LOG_LOCATION = (
     if os.getenv("TEST_ENV") != "True"
     else "/tmp/log/eircode/eircode.log"
 )
-
-IDENTITY_URL_PATH = "https://api-finder.eircode.ie/Latest/findergetidentity"
-EIRCODE_FINDER_URL_PATH = "https://api-finder.eircode.ie/Latest/finderfindaddress"
+BASE_URL = "api-finder.eircode.ie"
+IDENTITY_URL_PATH = "/Latest/findergetidentity"
+EIRCODE_FINDER_URL_PATH = "/Latest/finderfindaddress"
 
 ROUTING_KEYS_TOWNS_MAP = {
     "A41": ["Ballyboughal"],
