@@ -8,7 +8,7 @@ LOG_LOCATION = (
 
 IDENTITY_URL_PATH = "https://api-finder.eircode.ie/Latest/findergetidentity"
 EIRCODE_FINDER_URL_PATH = "https://api-finder.eircode.ie/Latest/finderfindaddress"
-
+HEADERS = {'User-Agent': 'Mozilla/5.0'}
 ROUTING_KEYS_TOWNS_MAP = {
     "A41": ["Ballyboughal"],
     "A42": ["Garristown"],
