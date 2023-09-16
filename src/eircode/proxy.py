@@ -5,6 +5,7 @@ import random
 import requests
 from requests_ip_rotator import ApiGateway
 
+from eircode.constants import HEADERS
 from eircode.logging import logger
 
 
@@ -30,6 +31,7 @@ class Proxy:
 
         self.session = requests.Session()
         self.session.mount(self.site, self.gateway)
+        self.session.headers = HEADERS
 
         self._is_setup = True
 

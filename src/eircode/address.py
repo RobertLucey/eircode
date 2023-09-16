@@ -6,7 +6,7 @@ import requests
 
 from eircode.logging import logger
 from eircode.eircode import Eircode
-from eircode.constants import IDENTITY_URL_PATH, EIRCODE_FINDER_URL_PATH
+from eircode.constants import IDENTITY_URL_PATH, EIRCODE_FINDER_URL_PATH, HEADERS
 from eircode.proxy import proxy
 
 
@@ -96,7 +96,8 @@ class Address:
                     return
 
         else:
-            identity_response = requests.get(IDENTITY_URL_PATH).json()
+
+            identity_response = requests.get(IDENTITY_URL_PATH, headers=HEADERS).json()
             params = {
                 "key": identity_response["key"],
                 "address": self.input_address,
@@ -106,7 +107,7 @@ class Address:
             }
 
             try:
-                finder_response = requests.get(EIRCODE_FINDER_URL_PATH, params=params)
+                finder_response = requests.get(EIRCODE_FINDER_URL_PATH, params=params, headers=HEADERS)
             except Exception as ex:
                 if throw_ex:
                     raise ex
@@ -196,7 +197,7 @@ class Address:
         if self.proxy:
             data = proxy.get(self.link).json()
         else:
-            data = requests.get(self.link).json()
+            data = requests.get(self.link, headers=HEADERS).json()
 
         if data.get("error", {}).get("code", None) == 403:
             raise ValueError(data["error"]["text"])

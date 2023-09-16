@@ -1,5 +1,6 @@
 from unittest import TestCase, skip
 
+from eircode.constants import HEADERS
 from eircode.proxy import Proxy
 
 
